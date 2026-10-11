@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/pokemon.dart';
+import '../providers/pokemon_provider.dart';
+import '../screens/pokemon_detail_screen.dart';
 import 'pokemon_card.dart';
 
 const kGridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
@@ -23,7 +26,20 @@ class PokemonGrid extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       gridDelegate: kGridDelegate,
       itemCount: pokemon.length,
-      itemBuilder: (context, i) => PokemonCard(pokemon: pokemon[i], index: i),
+      itemBuilder: (context, i) {
+        final item = pokemon[i];
+        return PokemonCard(
+          pokemon: item,
+          index: i,
+          onTap: () {
+            // Selection goes into app state; the detail page reads it back.
+            context.read<PokemonProvider>().selectPokemon(item);
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PokemonDetailScreen()),
+            );
+          },
+        );
+      },
     );
   }
 }
